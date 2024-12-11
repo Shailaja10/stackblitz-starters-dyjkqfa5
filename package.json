@@ -1,0 +1,52 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'my-app',
+  templateUrl: './app.component.html',
+  styleUrls: [ './app.component.css' ]
+})
+export class AppComponent  {
+  // Initializing seat layout with already booked seats
+  seats = [
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0],
+  ];
+  // holds booking result
+  bookingResult : string;
+
+  // Book req. no. of seats
+  bookSeats(numSeats: number): string {
+    let bookedSeats: string[] = [];
+
+    for (let i = 0; i < this.seats.length; i++) {
+    let row = this.seats[i];
+    let contiguousSeats = this.findContiguousSeats(row, numSeats);
+
+    if (contiguousSeats) {
+      // book seats
+      contiguousSeats.forEach(index => row[index] = 1);
+      bookedSeats = contiguousSeats.map(index => `R${i+1}S${index+1}`);
+      break;
+    }
+  }
+  if (bookedSeats.length > 0) {
+    return `Booked seats: ${bookedSeats.join(', ')}`;
+  } else {
+    return 'Not enough contiguous seats available.';
+  }
+}
+// helper function to find contiguous available seats
+findContiguousSeats(row: number[], numSeats: number): number[] | null{
+  for (let i = 0; i <= row.length - numSeats; i++) {
+    if (row.slice(i, i + numSeats).every(seat => seat === 0)) {
+      return Array.from({ length: numSeats }, (_, index) => i + index);
+    }
+  }
+  return null;
+}
+}
